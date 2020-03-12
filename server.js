@@ -1,57 +1,41 @@
-const http = require('http');
+const express = require('express');
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+const colors = require('colors');
+const connectDB = require('./config/db');
 
-let todos = [
-    { id: 1, text: "Hello" },
-    { id: 2, text: "Doctor" },
-    { id: 2, text: "Strange" }
-]
+dotenv.config({ path: './config/config.env' });
 
-const server = http.createServer((req, res) => {
-    // res.setHeader('Content-Type','text/json')
-    // res.setHeader('X-Powered-By','Node.js')
-    // res.write("Hello")
-    // console.log(headers, url, method)
+// Connect to database
+connectDB();
 
-    const { method, url } = req
+// Route Files
+const bootcamps = require('./routes/bootcamps');
 
-    // writing with body using http module
-    let body = [];
-    req.on('data', chunk => {
-        body.push(chunk)
-    }).on('end', () => {
-        body = Buffer.concat(body).toString()
-        
-        let status = 404;
-        const response = {
-            success: false,
-            data: null
-        }
-        
-        if (method === 'GET' && url === '/todos') {
-            status = 200;
-            response.success = true;
-            response.data = todos;
-        }
+const app = express();
 
-        if (method === 'POST' && url === '/todos') {
-            const {id, text } = JSON.parse(body);
-            todos.push({id,text});
-            status = 201;
-            response.success = true;
-            response.data = todos;
-        }
+// Body parser
+app.use(express.json());
+// Dev logging middleware
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
 
-        res.writeHead(status, {
-            'Content-Type': 'text/json',
-            'X-Powered-By': 'Node.js'
-        })
-        res.end(
-            JSON.stringify({ response })
-        )
-    })
+//Mount routes
+app.use('/api/v1/bootcamps', bootcamps);
 
+const PORT = process.env.PORT || 5000;
 
-})
-const PORT = 5000;
-server.listen(PORT, () => { console.log(`listening on port ${PORT} ${JSON.stringify(process.versions)}`) })
+const server = app.listen(
+  PORT,
+  console.log(
+    `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold
+  )
+);
 
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err, promise) => {
+  console.log(`Error: ${err.message}`.red);
+  // Close server & exit process
+  server.close(() => process.exit(1));
+});

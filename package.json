@@ -1,0 +1,23 @@
+{
+  "name": "bootcamp-directory",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brijeshverma111/bootcamp-directory.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brijeshverma111/bootcamp-directory/issues"
+  },
+  "homepage": "https://github.com/brijeshverma111/bootcamp-directory#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
